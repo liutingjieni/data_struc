@@ -97,10 +97,3 @@ int *arr_sort(int *a, int num, int max)
     return a;
 
 }
-int main()
-{
-    int a[10] = {64,8,216,512,27,729,0,1,343,125};
-    int max = arr_max(a, 10);
-    int *b = arr_sort(a, 10, max);
-    arr_print(b, 10);
-}
