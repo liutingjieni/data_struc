@@ -4,7 +4,6 @@
 	> Mail: 
 	> Created Time: 2019年10月08日 星期二 22时33分15秒
  ************************************************************************/
-#include "_stack.h"
 #include<stdio.h>
 #include <stdlib.h>
 
@@ -43,14 +42,14 @@ void stack_push(Stack *stack, void *data)
         stack->top = temp;
     }
     stack->size++;
-    stack->top = NULL;
+    stack->top->next = NULL;
 }
 
 void *stack_pop(Stack *stack)
 {
-    if (stack->size >= 0) {
-        void *data = stack->top->data;
-        Node *temp = stack->head;
+    void *data = stack->top->data;
+    Node *temp = stack->head;
+    if (stack->size > 1) {
         while (temp->next != stack->top) {
             temp = temp->next; 
         }
@@ -59,7 +58,16 @@ void *stack_pop(Stack *stack)
         stack->size--;
         return data;
     }
+    else if (stack->size == 1){
+        printf("lallala\n");
+        free(temp);
+        stack->size--;
+        return data;
+    }
     return NULL;
 }
 
-
+int stack_size(Stack *stack)
+{
+    return stack->size;
+}

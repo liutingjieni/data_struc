@@ -14,11 +14,22 @@ struct node{
 
 int main()
 {
-    
-    struct node stu;
+ 
+    int stu[10] = {1,2,3,4,5,6,7,8,9,0};
+    int *stu1= stu; 
     Stack *stack = stack_init();
-    stack_push(stack, stu);
-    struct node *stu2 = stack_pop(stack);
-    printf("%d\n",stu2.n);
-    printf("%s\n",stu2.s);
+    for (int i = 0; i < 10; i++) {
+        stack_push(stack, &stu1[i]);
+    }
+    printf("%d\n",stack_size(stack));
+    for (int i = 0; i < 9; i++) {
+        int *stu2 = stack_pop(stack);
+        if (stu2 == NULL) {
+            printf("stack_pop error\n");
+            return -1;
+        }
+        printf("%d\n",*stu2);
+    }
+    printf("%d\n",stack_size(stack));
+
 }
