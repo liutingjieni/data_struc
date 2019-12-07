@@ -44,9 +44,11 @@ void queue_push(Queue *queue, void *data)
 void *queue_pop(Queue *queue)
 {
     if (queue->size > 0) {
-        Node *temp = queue->head;
+        void *data = queue->head->data;
+        free(queue->head);
         queue->head =  queue->head->next;
-        return temp->data;
+        queue->size--;
+        return data;
     }
 }
 
