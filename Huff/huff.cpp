@@ -4,10 +4,40 @@
 	> Mail: 
 	> Created Time: 2019年12月27日 星期五 12时30分34秒
  ************************************************************************/
-#include "HUffman.h"
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <map>
 using namespace std;
 
+class Node {
+public:
+    char ch;
+    int weight;
+    int parent;
+    int Lchild;
+    int Rchild;
 
+
+};
+class HUffman {
+public:
+    HUffman(size_t n) { node = new Node[2 * n - 1]; count = n;   } 
+    ~HUffman() { delete[] node;  }
+    void Huff_init(map<char, size_t> );
+    void select(int, int &, int &);
+    void Huff_creat();
+    void Huff_encode();
+    void Huff_decode(ifstream &, ofstream &, int);
+    void file_out(ifstream &in, ofstream &out);
+private:
+    Node* node;
+    int count;
+    map<char, string> word_value;
+
+
+};
 void HUffman::Huff_init(map<char, size_t> word_count)
 {
     auto map_it = word_count.cbegin();
@@ -83,7 +113,6 @@ void HUffman::Huff_encode()
             }
         }
         word_value.insert({node[i].ch, str});
-        cout << node[i].ch << str << endl;
     }
     
 }
@@ -96,27 +125,24 @@ void HUffman::file_out(ifstream &in, ofstream &out)
     in.clear(std::ios::goodbit);
     in.seekg(std::ios::beg);
     
-    char t = 0;
-    int j = 7;
+    static int j = 0;
+    unsigned char bit[8] = {1, 2, 4, 8, 16, 32, 64, 128};
+    unsigned char Bchar = 0;
     while (in >> ch) {
         int i = 0;
         string str =word_value[ch];
         while (str[i] != '\0') {
-            if (str[i] = 0) {
-                *(&t + j) = 0;
-                j--;
+            if (str[i] == '1') {
+                Bchar = Bchar | bit[j];
             }
-            else {
-                *(&t + j) = 1;
-                j--;
-            }
-            if (j == -1) {
-                out << ch;
-                j = 7;
+            j++;
+            if (j == 8) {
+                out << Bchar;
+                Bchar = 0;
+                j = 0;
             }
             i++;
         }
-
     }
 }
 
@@ -124,18 +150,18 @@ int Get_bit(ifstream &in)
 {
     static int i  = 7;
     static unsigned char Bchar;
-    unsigned char bit[8] = {128, 64, 32, 16, 8, 4, 2, 1};
+    unsigned char bit[8] = {1, 2, 4, 8, 16, 32, 64, 128};
     i++;
     if (i == 8) {
-        Bchar = in.get();
+        in >> Bchar;
         i = 0;
     }
     return(Bchar&bit[i]);
 }
 
-void HUffman::huff_decode(ofstream &in, ofstream &out) 
+void HUffman::Huff_decode(ifstream &in, ofstream &out, int n) 
 {
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < n; i++) {
         int c = count * 2 - 2;
         while (c >= count) {
             if(Get_bit(in)) {
@@ -157,13 +183,15 @@ int main(int argc, char *argv[])
 
     ifstream in(argv[1]);
     ofstream out(argv[2]);
-    
+    ofstream out2(argv[3]);
 
     map<char, size_t> word_count;
     char word;
+    int n = 0;
     int count = 0; 
     while (in >> word) {
         count++;
+        n++;
         auto ret = word_count.insert({word, 1});
         if (!ret.second) {
             ++ret.first->second;
@@ -175,6 +203,9 @@ int main(int argc, char *argv[])
     huffman.Huff_init(word_count);
     huffman.Huff_creat();
     huffman.Huff_encode();
-    huffman.file_out(in, out);
+    huffman.file_out(in, out); 
+    out.close();
+    ifstream out1(argv[2]);
+    huffman.Huff_decode(out1, out2, n);
 
 }
