@@ -4,13 +4,6 @@
 	> Mail: 
 	> Created Time: 2019年12月27日 星期五 12时30分34秒
  ************************************************************************/
-
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <map>
-#include <memory>
-#include <vector>
 #include "HUffman.h"
 using namespace std;
 
@@ -127,9 +120,33 @@ void HUffman::file_out(ifstream &in, ofstream &out)
     }
 }
 
-void HUffman::huff_decode() 
+int Get_bit(ifstream &in)
 {
+    static int i  = 7;
+    static unsigned char Bchar;
+    unsigned char bit[8] = {128, 64, 32, 16, 8, 4, 2, 1};
+    i++;
+    if (i == 8) {
+        Bchar = in.get();
+        i = 0;
+    }
+    return(Bchar&bit[i]);
+}
 
+void HUffman::huff_decode(ofstream &in, ofstream &out) 
+{
+    for (int i = 0; i < count; i++) {
+        int c = count * 2 - 2;
+        while (c >= count) {
+            if(Get_bit(in)) {
+                c = node[c].Rchild;
+            }
+            else {
+                c = node[c].Lchild;
+            }
+        }
+        out << node[c].ch;
+    } 
 }
 
 int main(int argc, char *argv[])

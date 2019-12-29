@@ -11,15 +11,17 @@
 #include <map>
 #include "HUffman.h"
 using namespace std;
+
 int main(int argc, char *argv[])
 {
-    if (argc < 3) {
-                throw runtime_error("argc < 3, please input again!");
+    if (argc < 4) {
+        throw runtime_error("argc < 3, please input again!");
             
     }
 
     ifstream in(argv[1]);
     ofstream out(argv[2]);
+    ofstream out2(agrv[3]);
         
 
     map<char, size_t> word_count;
@@ -39,4 +41,5 @@ int main(int argc, char *argv[])
     huffman.Huff_creat();
     huffman.Huff_encode();
     huffman.file_out(in, out);
+    huffman.huff_decode(out, out2);
 }
