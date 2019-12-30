@@ -4,40 +4,8 @@
 	> Mail: 
 	> Created Time: 2019年12月27日 星期五 12时30分34秒
  ************************************************************************/
+#include "HUffman.h"
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <map>
-using namespace std;
-
-class Node {
-public:
-    char ch;
-    int weight = 0;
-    int parent = 0;
-    int Lchild = 0;
-    int Rchild = 0;
-
-
-};
-class HUffman {
-public:
-    HUffman(size_t n) { node = new Node[2 * n - 1]; count = n;   } 
-    ~HUffman() { delete[] node;  }
-    void Huff_init(map<char, size_t> );
-    void select(int, int &, int &);
-    void Huff_creat();
-    void Huff_encode();
-    void Huff_decode(ifstream &, ofstream &, int);
-    void file_out(ifstream &in, ofstream &out);
-private:
-    Node* node;
-    int count;
-    map<char, string> word_value;
-
-
-};
 void HUffman::Huff_init(map<char, size_t> word_count)
 {
     auto map_it = word_count.cbegin();
@@ -147,9 +115,17 @@ void HUffman::file_out(ifstream &in, ofstream &out)
         }
         k++;
     }
-}
+    }
 }
 
+void HUffman::file_code(ofstream &out)
+{
+    out << count << " ";
+    out << n << " ";
+    for (int i = 0; i < 2 * count - 1; i++) {
+        out << node[i].ch << " "<< node[i].parent << " "<< node[i].Rchild << " "<< node[i].Lchild << " ";
+    }
+}
 int Get_bit(ifstream &in)
 {
     static int i  = 7;
@@ -163,7 +139,7 @@ int Get_bit(ifstream &in)
     return(Bchar&bit[i]);
 }
 
-void HUffman::Huff_decode(ifstream &in, ofstream &out, int n) 
+void HUffman::Huff_decode(ifstream &in, ofstream &out) 
 {
     for (int i = 0; i < n - 1; i++) {
         int c = count * 2 - 2;
@@ -180,42 +156,4 @@ void HUffman::Huff_decode(ifstream &in, ofstream &out, int n)
     out << "\n";
 }
 
-int main(int argc, char *argv[])
-{
-    if (argc < 4) {
-        throw runtime_error("argc < 3, please input again!");
-    }
 
-    ifstream in(argv[1], ios::out | ios::binary);
-    ofstream out(argv[2], ios::out | ios::binary);
-    ofstream out2(argv[3], ios::out| ios::binary);
-
-    map<char, size_t> word_count;
-    char word;
-    int n = 0;
-    int count = 0;
-    string line;
-    while(getline(in, line)) {
-        int i = 0;
-        line = line + '\n';
-            while (line[i]) {
-            count++;
-            n++;
-            auto ret = word_count.insert({line[i], 1});
-            if (!ret.second) {
-                ++ret.first->second;
-                count--;
-            }
-            i++;
-            }
-    }
-
-    HUffman huffman(count);
-    huffman.Huff_init(word_count);
-    huffman.Huff_creat();
-    huffman.Huff_encode();
-    huffman.file_out(in, out); 
-    out.close();
-    ifstream out1(argv[2], ios::out | ios::binary);
-    huffman.Huff_decode(out1, out2, n);
-}

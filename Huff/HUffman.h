@@ -11,31 +11,36 @@
 #include <fstream>
 #include <string>
 #include <map>
+using namespace std;
+
 class Node {
-    public:
-        char ch;
-        int weight;
-        int parent;
-        int Lchild;
-        int Rchild;
+public:
+    char ch;
+    int weight = 0;
+    int parent = 0;
+    int Lchild = 0;
+    int Rchild = 0;
+
 
 };
 class HUffman {
-    public:
-        HUffman(size_t n) { node = new Node[2 * n - 1]; count = n;  } 
-        ~HUffman() { delete[] node; }
-        void Huff_init(map<char, size_t> );
-        void select(int, int &, int &);
-        void Huff_creat();
-        void Huff_encode();
-        void Huff_decode();
-        void file_out(ifstream &in, ofstream &out);
-    private:
-        Node* node;
-        int count;
-        map<char, string> word_value;
-
+public:
+    HUffman(size_t c, int t) { node = new Node[2 * c - 1];
+                               count = c; 
+                               n = t;  }
+    ~HUffman() { delete[] node;  }
+    void Huff_init(map<char, size_t> );
+    void select(int, int &, int &);
+    void Huff_creat();
+    void Huff_encode();
+    void Huff_decode(ifstream &, ofstream &);
+    void file_out(ifstream &in, ofstream &out);
+    void file_code(ofstream &);
+    void filein_node(ifstream &);
+private:
+    Node* node;
+    int count;
+    map<char, string> word_value;
+    int n;
 };
-
-
 #endif
