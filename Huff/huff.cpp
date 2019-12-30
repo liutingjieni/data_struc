@@ -14,10 +14,10 @@ using namespace std;
 class Node {
 public:
     char ch;
-    int weight;
-    int parent;
-    int Lchild;
-    int Rchild;
+    int weight = 0;
+    int parent = 0;
+    int Lchild = 0;
+    int Rchild = 0;
 
 
 };
@@ -60,14 +60,13 @@ void HUffman::select(int n, int &a, int &b)
             break;
         }
     }
-
     for (int i = a + 1; i < n; i++) {
         if (node[i].parent == 0 && min_weight > node[i].weight) {
             min_weight = node[i].weight;
             a = i;
         }
     }
-
+    
     for (int i = 0; i < n; i++) {
         if (node[i].parent == 0 && i != a) {
             b = i;
@@ -95,6 +94,7 @@ void HUffman::Huff_creat()
         node[a].parent = i;
         node[b].parent = i;
     }
+
 }
 
 void HUffman::Huff_encode()
@@ -103,6 +103,7 @@ void HUffman::Huff_encode()
         int t = i;
         string str;
         while (t != count * 2 - 2) {
+
             int temp = t;
             t = node[t].parent;
             if (temp == node[t].Lchild) {
@@ -117,20 +118,21 @@ void HUffman::Huff_encode()
     
 }
 
-
-
 void HUffman::file_out(ifstream &in, ofstream &out)
 {
-    char ch;
     in.clear(std::ios::goodbit);
     in.seekg(std::ios::beg);
     
     static int j = 0;
     unsigned char bit[8] = {1, 2, 4, 8, 16, 32, 64, 128};
     unsigned char Bchar = 0;
-    while (in >> ch) {
+    string line;
+    while (getline(in, line)) {
+        line = line + '\n';
+        int k = 0;
+        while (line[k]) {
         int i = 0;
-        string str =word_value[ch];
+        string str =word_value[line[k]];
         while (str[i] != '\0') {
             if (str[i] == '1') {
                 Bchar = Bchar | bit[j];
@@ -143,7 +145,9 @@ void HUffman::file_out(ifstream &in, ofstream &out)
             }
             i++;
         }
+        k++;
     }
+}
 }
 
 int Get_bit(ifstream &in)
@@ -153,7 +157,7 @@ int Get_bit(ifstream &in)
     unsigned char bit[8] = {1, 2, 4, 8, 16, 32, 64, 128};
     i++;
     if (i == 8) {
-        in >> Bchar;
+        Bchar = in.get();
         i = 0;
     }
     return(Bchar&bit[i]);
@@ -161,7 +165,7 @@ int Get_bit(ifstream &in)
 
 void HUffman::Huff_decode(ifstream &in, ofstream &out, int n) 
 {
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n - 1; i++) {
         int c = count * 2 - 2;
         while (c >= count) {
             if(Get_bit(in)) {
@@ -173,30 +177,37 @@ void HUffman::Huff_decode(ifstream &in, ofstream &out, int n)
         }
         out << node[c].ch;
     } 
+    out << "\n";
 }
 
 int main(int argc, char *argv[])
 {
-    if (argc < 3) {
+    if (argc < 4) {
         throw runtime_error("argc < 3, please input again!");
     }
 
-    ifstream in(argv[1]);
-    ofstream out(argv[2]);
-    ofstream out2(argv[3]);
+    ifstream in(argv[1], ios::out | ios::binary);
+    ofstream out(argv[2], ios::out | ios::binary);
+    ofstream out2(argv[3], ios::out| ios::binary);
 
     map<char, size_t> word_count;
     char word;
     int n = 0;
-    int count = 0; 
-    while (in >> word) {
-        count++;
-        n++;
-        auto ret = word_count.insert({word, 1});
-        if (!ret.second) {
-            ++ret.first->second;
-            count--;
-        }
+    int count = 0;
+    string line;
+    while(getline(in, line)) {
+        int i = 0;
+        line = line + '\n';
+            while (line[i]) {
+            count++;
+            n++;
+            auto ret = word_count.insert({line[i], 1});
+            if (!ret.second) {
+                ++ret.first->second;
+                count--;
+            }
+            i++;
+            }
     }
 
     HUffman huffman(count);
@@ -205,7 +216,6 @@ int main(int argc, char *argv[])
     huffman.Huff_encode();
     huffman.file_out(in, out); 
     out.close();
-    ifstream out1(argv[2]);
+    ifstream out1(argv[2], ios::out | ios::binary);
     huffman.Huff_decode(out1, out2, n);
-
 }
