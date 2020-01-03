@@ -82,6 +82,7 @@ void HUffman::Huff_encode()
             }
         }
         word_value.insert({node[i].ch, str});
+        cout << node[i].ch << str;
     }
     
 }

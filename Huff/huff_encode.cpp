@@ -40,7 +40,6 @@ int main(int argc, char *argv[])
             }
     }
 
-    cout << n << "&&&&&&&&&"<< count << endl;
     HUffman huffman(count, n);
     huffman.Huff_init(word_count);
     huffman.Huff_creat();
