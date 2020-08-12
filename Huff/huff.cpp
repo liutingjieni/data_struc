@@ -94,7 +94,6 @@ void HUffman::Huff_creat()
         node[a].parent = i;
         node[b].parent = i;
     }
-
 }
 
 void HUffman::Huff_encode()
@@ -114,6 +113,7 @@ void HUffman::Huff_encode()
             }
         }
         word_value.insert({node[i].ch, str});
+        cout << node[i].ch << str << endl;
     }
     
 }
