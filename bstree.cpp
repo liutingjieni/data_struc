@@ -59,7 +59,7 @@ template <typename T>
 void BsTree<T>::printNode()
 {
     if(!root) return;
-   root->print();
+    root->print();
 }
 
 template <typename T>
@@ -74,18 +74,33 @@ Node<T>* BsTree<T>::search(T value)
 template <typename T>
 void BsTree<T>::deleNode(T value)
 {
+    //找到要删除的结点
     Node<T> *node = root->searchNode(value);
-    if (!node) {
+    if (!node) { //如果没有该节点,返回
         return;
     }
+    //找到要删除的节点的父节点
     Node<T> *parent = root->searchParentNode(value);
-    if (!parent) {
-        if(root->left == NULL && root->right == NULL) {
+    if (!parent) { //如果没有父节点,即要删除root结点
+        if(root->left == NULL && root->right == NULL) { //只有一个root结点
             delete []node;
             root = NULL;
             return;
+        } else if(root->left == NULL || root->right == NULL) { //root结点有一颗子树
+            if(root->left != NULL) {
+                Node<T> * t = root;
+                root = root->left;
+                delete []t;
+            } else {
+                Node<T> *t = root;
+                root = root->right;
+                delete []t;
+            }
+            return;
         }
+        //root有两颗子树的情况在下面处理
     }
+    //要删除的结点为叶子节点
     if (node->left == NULL && node->right == NULL) {
         if (parent->left == node) {
             parent->left = NULL;
@@ -93,6 +108,7 @@ void BsTree<T>::deleNode(T value)
             parent->right = NULL;
         }
         delete []node;
+    //要删除的结点有一颗子树
     } else if (node ->left == NULL || node->right == NULL) {
         if(node->left == NULL) {
             if (parent->left == node) {
@@ -111,14 +127,21 @@ void BsTree<T>::deleNode(T value)
                 delete []node;
             }
         }
-    }else {
+    }else { //要删除的结点有两颗子树
+        //找到结点的右子树上的最小节点
         Node<T> *min = node->right->min();
-        node->value = min->value;
+        //右子树最小结点的父节点
         Node<T> *parent_min = node->right->searchParentNode(min->value);
-        if (parent_min->left == min) {
-            parent_min->left = NULL;
-        } else {
-            parent_min->right = NULL;
+        if (parent_min != NULL) {    
+            node->value = min->value;
+            if (parent_min->left == min) {
+                parent_min->left = NULL;
+            } else {
+                parent_min->right = NULL;
+            }
+        } else { //右子树最小结点为要删除节点的右结点
+            node->value = min->value;
+            node->right = min->right;
         }
         delete []min;
     }   
